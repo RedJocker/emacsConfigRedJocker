@@ -235,11 +235,14 @@
 (setq racket-program "/usr/local/bin/racket")
 ;;
 
-
+(require 'pos-tip)
 
 ;; Haskell
 (defun haskell-get-doc-string()
-  "Look up the word under cursor in ghci :doc"
+  "Look up the word under cursor in ghci :doc. The result depends on the loaded context at ghci.
+This function depends on haskell-mode.el and haskell-interactive-mode.el
+
+"
   (interactive)
   (let ((word
          (if (use-region-p)
@@ -294,14 +297,14 @@
 	lsp-ui-doc-alignment 'window
 	lsp-ui-imenu-enable t
 	lsp-ui-imenu-buffer-position 'left
-	lsp-eldoc-enable-hover nil
-        lsp-log-io t
+	lsp-eldoc-enable-hover t
+        lsp-log-io nil
 	lsp-ui-sideline-show-hover nil
 	lsp-ui-sideline-show-diagnostics t
-	lsp-ui-sideline-show-symbol t
+	lsp-ui-sideline-show-symbol nil
+	lsp-ui-sideline-show-code-actions t
 	lsp-ui-sideline-diagnostic-max-lines 15
 	lsp-ui-sideline-update-mode 'line
-	lsp-ui-sideline-show-code-actions t
 	lsp-ui-flycheck-list-position 'right))
  
 (use-package haskell-interactive-mode
@@ -332,12 +335,11 @@
   (setq haskell-align-imports-pad-after-name t
         haskell-font-lock-symbols t
 	haskell-doc-show-global-types nil
-	haskell-doc-use-inf-haskell t
+	haskell-doc-use-inf-haskell nil
 	haskell-process-type 'ghci
 	haskell-process-suggest-remove-import-lines t
 	haskell-process-auto-import-loaded-modules t
 	haskell-process-use-presentation-mode t
-	haskell-process-auto-import-loaded-modules t
 	haskell-process-suggest-haskell-docs-imports t
 	haskell-process-suggest-hoogle-imports t
 	haskell-process-suggest-remove-import-lines t
@@ -372,6 +374,65 @@
   (define-key haskell-cabal-mode-map (kbd "C-c C-c") 'haskell-process-cabal-build)
   (define-key haskell-cabal-mode-map (kbd "C-c c") 'haskell-process-cabal)))
 
+
+
+
+(define-minor-mode phils/contextual-help-mode
+  "Show help for the elisp symbol at point in the current *Help* buffer.
+
+Advises `eldoc-print-current-symbol-info'."
+  :lighter " C-h"
+  :global t
+  (require 'help-mode) ;; for `help-xref-interned'
+  (when (eq this-command 'phils/contextual-help-mode)
+    (message "Contextual help is %s" (if phils/contextual-help-mode "on" "off")))
+  (and phils/contextual-help-mode
+       (eldoc-mode 1)
+       (if (fboundp 'eldoc-current-symbol)
+           (eldoc-current-symbol)
+         (elisp--current-symbol))
+       (phils/contextual-help :force)))
+
+(defadvice eldoc-print-current-symbol-info (before phils/contextual-help activate)
+  "Triggers contextual elisp *Help*. Enabled by `phils/contextual-help-mode'."
+  (and phils/contextual-help-mode
+       (derived-mode-p 'emacs-lisp-mode)
+       (phils/contextual-help)))
+
+(defvar-local phils/contextual-help-last-symbol nil
+  ;; Using a buffer-local variable for this means that we can't
+  ;; trigger changes to the help buffer simply by switching windows,
+  ;; which seems generally preferable to the alternative.
+  "The last symbol processed by `phils/contextual-help' in this buffer.")
+
+(defun phils/contextual-help (&optional force)
+  "Describe function, variable, or face at point, if *Help* buffer is visible.
+https://emacs.stackexchange.com/questions/22132/help-buffer-on-hover-possible
+"
+  (let ((help-visible-p (get-buffer-window (help-buffer))))
+    (when (or help-visible-p force)
+      (let ((sym (if (fboundp 'eldoc-current-symbol)
+                     (eldoc-current-symbol)
+                   (elisp--current-symbol))))
+        ;; We ignore keyword symbols, as their help is redundant.
+        ;; If something else changes the help buffer contents, ensure we
+        ;; don't immediately revert back to the current symbol's help.
+        (and (not (keywordp sym))
+             (or (not (eq sym phils/contextual-help-last-symbol))
+                 (and force (not help-visible-p)))
+             (setq phils/contextual-help-last-symbol sym)
+             sym
+             (save-selected-window
+               (describe-symbol sym)))))))
+
+(defun phils/contextual-help-toggle ()
+  "Intelligently enable or disable `phils/contextual-help-mode'."
+  (interactive)
+  (if (get-buffer-window (help-buffer))
+      (phils/contextual-help-mode 'toggle)
+    (phils/contextual-help-mode 1)))
+
+(phils/contextual-help-mode 1)
 
 (provide 'init)
 ;;; init.el ends here
