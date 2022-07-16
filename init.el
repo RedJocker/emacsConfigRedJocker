@@ -127,6 +127,8 @@
   :init
   (add-hook 'after-init-hook #'global-company-mode)
 
+  ;; pop-ups - used by company quickhelp
+  (require 'pos-tip)
   (use-package company-quickhelp
     :ensure t
     :init (add-hook 'company-mode-hook #'company-quickhelp-mode)
@@ -235,7 +237,6 @@
 (setq racket-program "/usr/local/bin/racket")
 ;;
 
-(require 'pos-tip)
 
 ;; Haskell
 (defun haskell-get-doc-string()
@@ -373,8 +374,29 @@ This function depends on haskell-mode.el and haskell-interactive-mode.el
   (define-key haskell-cabal-mode-map (kbd "C-c C-k") 'haskell-interactive-mode-clear)
   (define-key haskell-cabal-mode-map (kbd "C-c C-c") 'haskell-process-cabal-build)
   (define-key haskell-cabal-mode-map (kbd "C-c c") 'haskell-process-cabal)))
+;; Haskell
 
 
+;;;;; experimental
+
+
+(defun mbr/company-frontend (command)
+  (pcase command
+    (`post-command
+     (let* ((selected (nth company-selection company-candidates))
+            (doc (let ((inhibit-message t))
+                   (company-quickhelp--doc selected))))
+       (with-help-window "*mbr/quick-buffer-doc*"
+	  (princ (format "=== %s ===\n\n\n%s" selected doc)))))))
+
+(defun enable-mbr/company-frontend()
+  "Enables for this buffer documentation dysplay on help buffer for company autocomplete candidates."
+  (make-local-variable 'company-frontends)
+  (add-to-list 'company-frontends 'mbr/company-frontend :append))
+
+(defun disable-mbr/company-frontend()
+  "Disable for this buffer documentation dysplay on help buffer for company autocomplete candidates."
+  (setq-local company-frontends (delq 'mbr/company-frontend company-frontends)))
 
 
 (define-minor-mode phils/contextual-help-mode
