@@ -13,7 +13,9 @@
 
 ;; Define and initialize package repositories
 (require 'package)
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+(setq package-archives '(("melpa" . "https://melpa.org/packages/")
+			 ("org"   . "https://orgmode.org/elpa/")
+			 ("elpa"  . "https://elpa.gnu.org/packages/")))
 (package-initialize)
 
 ;; use-package to simplify the config file
