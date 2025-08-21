@@ -8,8 +8,8 @@
 (when (file-exists-p custom-file)
   (load custom-file))
 
-(package-install 'exec-path-from-shell)
-(exec-path-from-shell-initialize)
+;;(package-install 'exec-path-from-shell)
+;;(exec-path-from-shell-initialize)
 
 ;; Define and initialize package repositories
 (require 'package)
@@ -25,6 +25,33 @@
 ;;(package-initialize)
 ;;(package-refresh-contents)
 
+;;(global-unset-key (kbd "<up>"))
+;;(global-unset-key (kbd "<down>"))
+
+
+
+
+(use-package ace-window
+  :ensure t
+  :bind
+  (("M-o" . #'ace-select-window)
+   ("C-M-O" . #'ace-swap-window)))
+
+(defun c-hook-fun()
+  (setq-local c-basic-offset 4)
+  (setq-local tab-width 4)
+  (setq-local indent-tabs-mode t)
+  (setq-local c-backspace-function 'backward-delete-char)
+  (c-set-offset 'substatement-open 0)
+  (setq-local tab-stop-list
+		        '(4 8 12 16 20 24 28 32
+					36 40 44 48 52 56 60
+	  				64 68 72 76 80 84 88 92 96
+					100 104 108 112 116 120))
+  (local-set-key (kbd "TAB") #'self-insert-command)
+  (local-set-key (kbd "C-c e o") #'ff-get-other-file)
+  (electric-indent-mode nil))
+
 (use-package emacs
   :ensure t
   :config
@@ -35,24 +62,29 @@
   ;; no toolbar
   (tool-bar-mode -1)
   ;; tab-bar
-  (tab-bar-mode 1)
+  (tab-bar-mode -1)
   ;; col-num on modeline
   (column-number-mode t)
   ;; lambda
   (global-prettify-symbols-mode t)
+  (repeat-mode 1)
   ;; display time
   (setq-default display-time-24hr-format t)
   (display-time-mode 1)
   ;; mini-buffer completion
   (icomplete-mode t)
   (icomplete-vertical-mode t)
+  ;; save minibuffer history
+  (savehist-mode 1)
+  ;; recent files buffer
+  (recentf-mode 1)
   ;; file and buffer completion on minibuffer
   (ido-mode t)
   (setq-default ido-enable-flex-matching t)
   ;; right margin indication at col 80
   (global-display-fill-column-indicator-mode t)
   (setq-default fill-column 80)
-  ;; relative line numbers
+  ;; relative lineB numbers
   (setq-default display-line-numbers-type 'relative)
   ;; display line number in prog-mode
   (add-hook 'prog-mode-hook #'display-line-numbers-mode)
@@ -62,30 +94,97 @@
   (setq-default isearch-lazy-count t)
   ;; no confirmation on ibuffer killing  
   (setq-default ibuffer-expert t)
+  ;; easy copy file side by side dired buffers 
+  (setq-default dired-dwim-target t)
+  ;; load tags update without asking
+  (setq-default tags-revert-without-query 1)
+  ;; set flags for man command to open all man sections
+  ;; related to that word (navigate section with M-n M-p)
+  (setq-default Man-switches "-a")
+  ;; support for output with color on compilation mode
+  (add-hook 'compilation-filter-hook 'ansi-color-compilation-filter)  
+  (add-hook 'c-mode-hook #'c-hook-fun)
+  (add-hook 'c++-mode-hook #'c-hook-fun)
+   
+  (setq auto-save-file-name-transforms
+	`((".*" ,(expand-file-name "auto-saves/" user-emacs-directory) t)))
+  (setq backup-directory-alist
+	`((".*" . ,(expand-file-name "backups/" user-emacs-directory))))
+
+  (setq-default ediff-split-window-function #'split-window-horizontally)
+  (setq-default ediff-window-setup-function #'ediff-setup-windows-plain)
+  
+  :bind
+  (("C-x C-b" . #'ibuffer)
+   ("C-c p c" . #'compile)
+   ("C-c p p" . #'recompile)
+   ("C-c p f" . #'recentf-open-files)
+   ("C-x !" . #'shell)
+   ("C-x @" . #'ansi-term)
+   ("C-x <up>" .#'windmove-up)
+   ("C-x <down>" .#'windmove-down)
+   ("C-x <left>" .#'windmove-left)
+   ("C-x <right>" .#'windmove-right)))
+
+(load "~/.emacs.d/42/list.el")
+(load "~/.emacs.d/42/string.el")
+(load "~/.emacs.d/42/comments.el")
+(load "~/.emacs.d/42/header.el")
+
+
+(use-package deadgrep
+  :ensure t
+  :bind ("C-c p s" . #'deadgrep))
+
+(use-package vterm
+  :ensure t)
+
+
+(use-package multiple-cursors
+  :ensure t
 
   :bind
-  (("M-o" . #'ace-select-window)
-   ("C-x C-b" . #'ibuffer)
-   ("C-c p c" . #'compile)
-   ("C-c p p" . #'recompile)))
+  (("C-c >" . #'mc/mark-next-like-this-word)
+   ("C-c C->" . #'mc/mark-all-symbols-like-this-in-defun)
+   ("C-c M->" . #'mc/mark-all-words-like-this)
+   ("C-c SPC" . #'mc/edit-lines)
+   ))
 
 
-;; Theme
-;;(use-package exotica-theme
-;;  :config (load-theme 'exotica t))
+;; ;; Theme
+;; (use-package exotica-theme
+;;   :ensure t
+;;   :config (load-theme 'exotica t))
 
 ;; (use-package zenburn-theme
+;;   :ensure t
 ;;   :config (load-theme 'zenburn t)
 ;;   (set-face-attribute 'region nil :background "#228" :foreground "#99ffff")
 ;;   (set-face-attribute 'hl-line nil :foreground nil :background "#333333"))
 
-(use-package darktooth-theme
-  :config (load-theme 'darktooth t)
-  (set-face-attribute 'region nil :background "#116" :foreground "#77ff33")
-  (set-face-attribute 'hl-line nil :foreground nil :background "#333333"))
-;;Theme
+;; (use-package darktooth-theme
+;;   :ensure t
+;;   :config (load-theme 'darktooth t)
+;;   (set-face-attribute 'region nil :background "#116" :foreground "#77ff33")
+;;   (set-face-attribute 'hl-line nil :foreground nil :background "#333333"))
+(load-theme 'afternoon)
 
+;;(set-face-attribute 'hl-line nil :foreground nil :background "#222222")
+;;(set-face-attribute 'hl-line nil :foreground nil :background "#DDDDDD")
 
+(set-frame-font "Monospace 19" nil t)
+;; ;;Theme
+
+(use-package undo-tree
+  :ensure t
+  :config
+  (global-undo-tree-mode)
+  :custom
+  (undo-tree-auto-save-history t)
+  
+  (undo-tree-history-directory-alist `((".*" . ,(expand-file-name "undo-tree-history-files/" user-emacs-directory))))
+  (undo-tree-visualizer-diff t)
+  (undo-tree-visualizer-timestamps t))
 
 '(((()))) ;; color parentheses by nested level
 (use-package rainbow-delimiters
@@ -137,21 +236,40 @@
   (which-key-setup-side-window-bottom))
 
 
+;; Beacon - find your cursor faster
+(use-package beacon
+  :config
+  (beacon-mode 1)
+  :custom
+  (beacon-blink-duration 1)
+  (beacon-blink-delay 0.2)
+  (beacon-size 80)
+  (beacon-blink-when-point-moves-vertically 2)
+  (beacon-blink-when-point-moves-horizontally 2))
+
 ;; git interface
 (use-package magit
   :ensure t)
 
-;; markdown support
-(use-package markdown-mode
-  :ensure t
-  :mode ("README\\.md\\'" . gfm-mode)
-  :init (setq markdown-command "multimarkdown"))
+;; ;; markdown support
+;; (use-package markdown-mode
+;;   :ensure t
+;;   :mode ("README\\.md\\'" . gfm-mode)
+;;   :init (setq markdown-command "multimarkdown"))
 
 ;; project level support 
 (use-package projectile
   :ensure t
   :config
   (define-key projectile-mode-map (kbd "C-c p o") 'projectile-command-map))
+
+
+
+(use-package yasnippet                  ; Snippets
+  :ensure t
+  :config
+  (add-hook 'prog-mode-hook #'yas-minor-mode)
+  (yas-reload-all))
 
 
 (use-package eglot
@@ -167,13 +285,34 @@
      "--function-arg-placeholders"
      "--header-insertion=iwyu"
      "--query-driver=/usr/bin/gcc,/usr/local/opt/llvm/bin/clang"
+     "--enable-config"
      )
    eglot-server-programs)
-  :bind (:map eglot-mode-map
-	      ("C-c e a" . #'eglot-code-actions)
-	      ("C-c e n" . #'flymake-goto-next-error)
-	      ))
+  (setcdr (assoc '(java-mode java-ts-mode) eglot-server-programs)
+	  ("/Users/redjocker/.emacs.d/share/eclipse.jdt.ls/bin/jdtls" 
+           "-configuration"
+	   "/Users/redjocker/.emacs.d/share/eclipse.jdt.ls/config_mac_arm"))
+  (push
+   '((mhtml-mode :language-id "html") 
+     "vscode-html-language-server"
+     "--stdio")
+   eglot-server-programs)
+  :bind (("C-c e e" . #'eglot)
+	 ("C-c e q" . #'eglot-shutdown-all)
+	 :map eglot-mode-map
+	 ("C-c e a" . #'eglot-code-actions)
+	 ("C-c e n" . #'flymake-goto-next-error)
+	 ("C-c e Q" . #'eglot-shutdown)
+	 ("C-c e w" . #'eglot-reconnect)
+	 ("C-c e r" . #'eglot-rename)))
 
+(use-package realgud
+  :ensure t
+  )
+
+(use-package realgud-lldb
+  :ensure t
+  )
 
 ;; ;; Gradle (Java and Kotlin)
 ;; (use-package flycheck-gradle
@@ -188,10 +327,16 @@
 ;; (use-package gradle-mode
 ;;   :ensure t)
 
-;; (use-package eglot-java
-;;   :ensure t)
-;; ;; Gradle (Java and Kotlin)
+(use-package eglot-java
+  :ensure t)
 
+(defun my-java-indent-setup ()
+  (c-set-offset 'arglist-intro '+)
+  (c-set-offset 'arglist-cont-nonempty '+)
+  (c-set-offset 'arglist-close 0))
+
+(add-hook 'java-mode-hook 'my-java-indent-setup)
+;; ;; Gradle (Java and Kotlin)
 
 
 (defun search-duck-duck ()
@@ -233,12 +378,180 @@
   (pbcopy)
   (delete-region (region-beginning) (region-end)))
 
-(defun load-swift() 
-  (interactive)
-  (use-package swift-mode
-    :ensure t
-    :config
-    (push '(swift-mode "sourcekit-lsp") eglot-server-programs)))
+;; ;; Swift
+;; (defun load-swift() 
+;;   (interactive)
+;;   (use-package swift-mode
+;;     :ensure t
+;;     :config
+;;     (push '(swift-mode "sourcekit-lsp") eglot-server-programs)))
+;; ;; Swift
+
+;; ;; Ruby
+;; (use-package inf-ruby
+;;   :ensure t
+;;   )
+;; ;;Ruby
+
+;; ;; Elixir
+;; (use-package
+;;   elixir-ts-mode
+;;   :ensure t
+;;   :hook (elixir-ts-mode . eglot-ensure)
+;;   (elixir-ts-mode
+;;    .
+;;    (lambda ()
+;;      (push '(">=" . ?\u2265) prettify-symbols-alist)
+;;      (push '("<=" . ?\u2264) prettify-symbols-alist)
+;;      (push '("!=" . ?\u2260) prettify-symbols-alist)
+;;      (push '("==" . ?\u2A75) prettify-symbols-alist)
+;;      (push '("=~" . ?\u2245) prettify-symbols-alist)
+;;      (push '("<-" . ?\u2190) prettify-symbols-alist)
+;;      (push '("->" . ?\u2192) prettify-symbols-alist)
+;;      (push '("<-" . ?\u2190) prettify-symbols-alist)
+;;      p   (push '("|>" . ?\u25B7) prettify-symbols-alist))))
+
+;; Should use:
+;; (mapc #'treesit-install-language-grammar (mapcar #'car treesit-language-source-alist))
+;; ;; at least once per installation or while changing this list
+;; (setq-default treesit-language-source-alist
+;;  '((heex "https://github.com/phoenixframework/tree-sitter-heex")
+;;    (elixir "https://github.com/elixir-lang/tree-sitter-elixir")))
+
+;; (setq-default major-mode-remap-alist
+;; 	      '((elixir-mode . elixir-ts-mode)))
+
+;; (add-to-list
+;;  'eglot-server-programs
+;;  '(elixir-ts-mode
+;;    "/Users/redjocker/playground/elixir/elixirLsp/elixir-ls-v0.17.10/language_server.sh"))
+
+;; ;; Elixir
+
+;; Lua
+(use-package
+  lua-mode
+  :ensure t)
+
+;; Nim
+(use-package nim-mode
+  :ensure t
+  :config (add-to-list 'eglot-server-programs
+		       '(nim-mode "nimlsp"))
+  :hook (nim-mode . (lambda() (auto-fill-mode 0)
+		      (electric-indent-local-mode 0))))
+
+;; ;; R
+;; (use-package ess
+;;   :ensure t
+;;   :config)
+
+;; ;; Common Lisp
+;; (use-package slime
+;;   :ensure t
+;;   :config
+;;   (load (expand-file-name "~/quicklisp/slime-helper.el"))
+;;   (setq-default inferior-lisp-program "sbcl"))
+
+;; ;; SML (polly)
+;; (use-package sml-mode
+;;   :ensure t)
+
+;; ;; F#
+;; (use-package fsharp-mode
+;;   :defer t
+;;   :ensure t)
+
+;; (use-package eglot-fsharp
+;;   :defer t
+;;   :ensure t
+;;   :config
+;;   (defun format-after-save ()
+;;     (add-hook 'before-save-hook #'eglot-format-buffer nil 'local))
+;;   :hook
+;;   (fsharp-mode . format-after-save))
+
+
+;; ;; Go
+;; (use-package go-mode
+;;   :ensure t)
+
+;; ;; Elm
+;; (use-package elm-mode
+;;   :ensure t
+;;   :custom
+;;   (elm-tags-on-save t))
+
+;; ;; Zig
+;; (use-package zig-mode
+;;   :ensure t)
+
+;; ;; SCHEME
+;; (use-package geiser
+;;   :ensure t)
+
+;; (use-package geiser-guile
+;;   :ensure t)
+;; ;; (setq geiser-mit-binary "/usr/local/bin/scheme")
+;; ;; (setq geiser-chez-binary "/usr/local/Cellar/chezscheme/9.5.4/bin/chez")
+;; ;; (setq geiser-guile-binary "/usr/local/bin/guile")
+;; ;; (setq geiser-racket-binary "/usr/local/bin/racket")
+;; ;; (setq geiser-mode-smart-tab-p t)
+;; ;; (setq racket-program "/usr/local/bin/racket")
+
+
+
+;; ;; Julia
+;; (use-package julia-mode)
+
+;; (use-package eat
+;;   :pin nongnu
+;;   :custom
+;;   (eat-kill-buffer-on-exit t)
+;;   :config
+;;   (delete [?\C-u] eat-semi-char-non-bound-keys) ; make C-u work in Eat terminals like in normal terminals
+;;   (delete [?\C-g] eat-semi-char-non-bound-keys) ; ditto for C-g
+;;   (eat-update-semi-char-mode-map)
+;;   ;; XXX: Awkward workaround for the need to call eat-reload after changing Eat's keymaps,
+;;   ;; but reloading from :config section causes infinite recursion because :config wraps with-eval-after-load.
+;;   (defvar eat--prevent-use-package-config-recursion nil)
+;;   (unless eat--prevent-use-package-config-recursion
+;;     (setq eat--prevent-use-package-config-recursion t)
+;;     (eat-reload))
+;;   (makunbound 'eat--prevent-use-package-config-recursion)
+;;   )
+
+;; (use-package julia-snail
+;;   :ensure t
+;;   :custom (julia-snail-terminal-type :eat)
+;;   :config (setq-default julia-snail-executable "/opt/homebrew/bin/julia") 
+;;   :hook (julia-mode . julia-snail-mode))
+
+
+(defun cppman (entry)
+  "View C++ reference entry using cppman in Emacs, similar to man command.
+If called interactively with no argument, uses the symbol at point as default."
+  (interactive
+   (list (let* ((default (thing-at-point 'symbol t))
+                (prompt (if default
+                            (format "C++ Reference entry (default %s): " default)
+                          "C++ Reference entry: ")))
+           (read-string prompt nil nil default))))
+  (let ((buffer (get-buffer-create (format "*cppman %s*" entry))))
+    (with-current-buffer buffer
+      (setq buffer-read-only nil)
+      (erase-buffer)
+      (call-process-shell-command
+       (format "cppman %s | col -b" entry)
+       nil (current-buffer))
+      (if (zerop (buffer-size))
+          (message "No results found for %s" entry)
+        (special-mode))
+      (setq buffer-read-only t)
+      (beginning-of-buffer))
+    (unless (zerop (buffer-size))
+      (switch-to-buffer buffer))))
+
 
 ;; old config
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -261,7 +574,7 @@
 ;;   ;; C-7        swiper-mc
 ;;   ;; C-c C-f    swiper-toggle-face-matching
 ;;   )
-  
+
 
 ;; (use-package counsel
 ;;   :ensure t
@@ -330,19 +643,6 @@
 ;;   :ensure t
 ;;   :bind
 ;;   ("M-s" . avy-goto-char))
-
-
-
-;; ;; Beacon - find your cursor faster
-;; (use-package beacon
-;;   :config
-;;   (beacon-mode 1)
-;;   :custom
-;;   (beacon-blink-duration 1)
-;;   (beacon-blink-delay 0.2)
-;;   (beacon-size 80)
-;;   (beacon-blink-when-point-moves-vertically 2)
-;;   (beacon-blink-when-point-moves-horizontally 2))
 
 ;; (use-package popwin)
 ;; (use-package pos-tip)
@@ -460,7 +760,7 @@
 ;;   (add-hook 'haskell-mode 'iedit-mode)
 ;;   ;;(add-hook 'emacs-lisp-mode-hook 'iedit-mode)
 ;;   (add-hook 'clojure-mode-hook 'iedit-mode))
- 
+
 ;; ;; window resize
 ;; (global-set-key (kbd "<f7>") 'enlarge-window-horizontally)
 ;; (global-set-key (kbd "<f8>") 'shrink-window-horizontally)
@@ -515,7 +815,7 @@
 ;; ;; 	(kotlin-mode . lsp-mode)))
 
 ;; ;; (use-package kotlin-ts-mode
-  
+
 ;; ;;   :mode "\\.kt\\'" ; if you want this mode to be auto-enabled
 ;; ;;   )
 
@@ -523,7 +823,7 @@
 ;; ;;   :ensure t
 ;; ;;   :config (flycheck-kotlin-setup))
 
-  
+
 
 
 ;; ;; Prolog
@@ -537,43 +837,6 @@
 ;; ;; Cpp
 
 ;; (setq flycheck-clang-args "-std=c++11")
-
-
-;; ;; Julia
-;; (use-package julia-mode)
-
-;; (use-package vterm
-;;   :ensure t
-;;   :load-path "~/.emacs.d/elpa/emacs-libvterm/")
-
-;; (use-package julia-vterm)
-;; (add-hook 'julia-mode-hook #'julia-vterm-mode)
-;; (setq julia-vterm-repl-program "/Applications/Julia-1.5.app/Contents/Resources/julia/bin/julia -t 4")
-
-;; (use-package julia-snail
-;;   :ensure t
-;;   :config (setq-default julia-snail-executable "/Applications/Julia-1.5.app/Contents/Resources/julia/bin/julia -t 4") 
-;;   :hook (julia-mode . julia-snail-mode))
-
-
-
-;; ;; Lisp
-;; (use-package slime
-;;   :init
-;;   ;; Replace "sbcl" with the path to your implementation
-;;   (add-to-list 'exec-path "/usr/local/bin/")  
-;;   (setq inferior-lisp-program "sbcl"))
-
-;; (print "Lisp loaded")
-
-;; ;; SCHEME
-;; (setq geiser-mit-binary "/usr/local/bin/scheme")
-;; (setq geiser-chez-binary "/usr/local/Cellar/chezscheme/9.5.4/bin/chez")
-;; (setq geiser-guile-binary "/usr/local/bin/guile")
-;; (setq geiser-racket-binary "/usr/local/bin/racket")
-;; (setq geiser-mode-smart-tab-p t)
-;; (setq racket-program "/usr/local/bin/racket")
-;; ;;
 
 ;; (print "Scheme loaded")
 
@@ -637,7 +900,7 @@
 ;;   :ensure t
 ;;   ;:hook (haskell-mode . flycheck-haskell-setup)
 ;;   )
- 
+
 ;; (use-package lsp-haskell
 ;;   :config
 ;;   (setq-default
@@ -646,7 +909,7 @@
 ;; 	;lsp-haskell-server-args nil
 ;;    )
 ;;   (setq-local before-save-hook `(lsp-format-buffer ,@before-save-hook)))
- 
+
 ;; (use-package lsp-mode
 ;;   :hook (((haskell-mode haskell-literate-mode) . lsp-deferred)
 ;;          (lsp-mode . lsp-enable-which-key-integration))
@@ -692,7 +955,7 @@
 ;; 	lsp-ui-sideline-diagnostic-max-lines 15
 ;; 	lsp-ui-sideline-update-mode 'line
 ;; 	lsp-ui-flycheck-list-position 'bottom))
- 
+
 ;; (use-package haskell-interactive-mode
 ;;   :ensure nil
 ;;   :config (haskell-indentation-mode)
@@ -701,7 +964,7 @@
 ;;         ("<f5>"    . haskell-interactive-switch-back)
 ;;         ("C-c C-z" . haskell-interactive-switch-back)
 ;;         ("C-c C-h" . bhr/haskell-search-hoogle)))
- 
+
 ;; (use-package haskell-literate-mode
 ;;   :mode ("\\.lhs$" . haskell-literate-mode)
 ;;   :ensure nil
@@ -730,7 +993,7 @@
 ;; 	haskell-process-suggest-hoogle-imports t
 ;; 	haskell-process-suggest-remove-import-lines t
 ;; 	haskell-tags-on-save nil)
-  
+
 ;;   :bind
 ;;   (:map haskell-mode-map
 ;;         ("<f5>"         . 'haskell-interactive-switch)
@@ -744,7 +1007,7 @@
 ;;         ("C-c C-n C-c"  . 'haskell-process-cabal-build)
 ;;         ("C-c C-n c"    . 'haskell-process-cabal)
 ;; 	("C-c a"       .  'lsp-ui-sideline-apply-code-actions)))
- 
+
 ;; (defun bhr/haskell-search-hoogle(start end)
 ;; "Search hoogle for the highlighted region or word under the cursor.
 ;;  START is start of region and END end of region."
@@ -870,7 +1133,7 @@
 ;;   "Describe function, variable, or face at point, if *Help* buffer is visible.
 ;; If FORCE is t *Help* will be made visible
 ;; https://emacs.stackexchange.com/questions/22132/help-buffer-on-hover-possible"
-  
+
 ;;   (let ((help-visible-p (get-buffer-window (help-buffer))))
 ;;     (when (or help-visible-p :force)
 ;;       (let ((sym (if (fboundp 'eldoc-current-symbol)
@@ -947,12 +1210,12 @@
 ;;   "Visual cues to indicate a bell event."
 ;;   (let ((mode-line-background (face-background 'mode-line))
 ;; 	(beacon-color "#ee2020")) 
-    
+
 ;;     (invert-face 'mode-line)
-    
+
 ;;     (buffer-face-mode 1)
 ;;     (buffer-face-set '(:inverse-video t))
-    
+
 ;;     (beacon-blink)
 ;;     (run-with-timer 0.3 nil #'buffer-face-mode 0)
 ;;     (run-with-timer 0.3 nil #'buffer-face-set '(:inverse-video nil))
@@ -969,10 +1232,11 @@
 ;;     (if (equal point-line-start current-point)
 ;;         (kill-line -1)
 ;;         (kill-region point-line-start current-point))))
-    
+
 
 ;; (global-set-key (kbd "C-M-m") #'kill-backward-line)
 
-
+(put 'upcase-region 'disabled nil)
 ;; (provide 'init)
 ;; ;;; init.el ends here
+
