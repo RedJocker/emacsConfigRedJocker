@@ -6,7 +6,7 @@
 ;; Define emacs directory for this alternative configuration
 ;; Start emacs with
 ;; #+begin_src:
-;;  emacs -Q -l ~/.emacs.42.d/
+;;  emacs -Q --init-directory ~/.emacs.42.d/
 ;; #+end_src: 
 
 (setq user-emacs-directory "~/.emacs.42.d/")
