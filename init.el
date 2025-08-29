@@ -298,7 +298,7 @@
      "--completion-style=bundled"
      "--function-arg-placeholders"
      "--header-insertion=iwyu"
-     "--query-driver=/usr/bin/gcc,/usr/local/opt/llvm/bin/clang"
+     "--query-driver=/usr/bin/gcc,/usr/bin/clang"
      "--enable-config"
      )
    eglot-server-programs)
@@ -310,6 +310,13 @@
 	 ("C-c e Q" . #'eglot-shutdown)
 	 ("C-c e w" . #'eglot-reconnect)
 	 ("C-c e r" . #'eglot-rename)))
+
+
+(push "/usr/share/emacs/site-lisp/" load-path)
+(require 'clang-format)
+(require 'clang-include-fixer)
+(require 'clang-rename)
+
 
 
 ;; (defun cppman (entry)
