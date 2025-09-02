@@ -266,11 +266,11 @@
 (use-package magit
   :ensure t)
 
-;; ;; markdown support
-;; (use-package markdown-mode
-;;   :ensure t
-;;   :mode ("README\\.md\\'" . gfm-mode)
-;;   :init (setq markdown-command "multimarkdown"))
+;; markdown support
+(use-package markdown-mode
+  :ensure t
+  :mode ("README\\.md\\'" . gfm-mode)
+  :init (setq markdown-command "markdown"))
 
 ;; project level support 
 (use-package projectile
