@@ -48,6 +48,9 @@
   (setq-local tab-width 4)
   (setq-local indent-tabs-mode t)
   (setq-local c-backspace-function 'backward-delete-char)
+  (setq-local comment-start "/*")
+  (setq-local comment-end "*/")
+
   (c-set-offset 'substatement-open 0)
   (setq-local tab-stop-list
 		        '(4 8 12 16 20 24 28 32
@@ -125,6 +128,9 @@
 
   (setq-default ediff-split-window-function #'split-window-horizontally)
   (setq-default ediff-window-setup-function #'ediff-setup-windows-plain)
+
+  (require 'calendar)
+  (calendar-set-date-style 'iso)
   
   :bind
   (("C-x C-b" . #'ibuffer)

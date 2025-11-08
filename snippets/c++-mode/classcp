@@ -1,0 +1,27 @@
+# key: classcp
+# name: classcp
+# --
+#include "${1: `(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))`}.hpp"
+
+$1::$1()
+{
+
+}
+
+$1::$1(const $1 &other)
+{
+
+}
+
+$1 &$1::operator=(cont $1 &other)
+{
+	if (this == &other)
+		return *this;
+
+	return *this;
+}
+
+$1::~$1()
+{
+
+}
