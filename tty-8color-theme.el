@@ -73,7 +73,8 @@
    `(font-lock-comment-delimiter-face ((t (:foreground ,delimiters))))
    `(font-lock-function-name-face     ((t (:foreground ,functions))))
    `(font-lock-doc-string-face        ((t (:foreground ,strings))))
-   `(magit-section-highlight       ((t (:foreground ,strings))))
+   `(magit-section-highlight       ((t (:foreground "#ff0000" :weigth bold))))
+   `(magit-section-heading       ((t (:foreground "LightGoldenrod2" :weight bold))))
    `(magit-hash                   ((t (:foreground ,strings))))
    '(corfu-default               ((t (:foreground "cyan" :background "blue"))))
 ;; *****************************************************************************************

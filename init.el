@@ -48,10 +48,9 @@
   (setq-local tab-width 4)
   (setq-local indent-tabs-mode t)
   (setq-local c-backspace-function 'backward-delete-char)
-  (setq-local comment-start "/*")
-  (setq-local comment-end "*/")
-
   (c-set-offset 'substatement-open 0)
+  (c-set-offset 'arglist-intro '+)
+  (c-set-offset 'arglist-close 0)
   (setq-local tab-stop-list
 		        '(4 8 12 16 20 24 28 32
 					36 40 44 48 52 56 60
