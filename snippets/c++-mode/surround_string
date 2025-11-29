@@ -1,0 +1,5 @@
+# key: nil
+# name: surround_string
+# binding: C-c a "
+# --
+"`yas-selected-text`"

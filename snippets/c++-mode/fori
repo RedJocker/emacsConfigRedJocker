@@ -1,0 +1,8 @@
+# key: fori
+# name: fori
+# binding: C-c a f
+# --
+for (${1:size_t i = 0}; ${2:i < limit}; ${3:++i})
+{
+	`yas-selected-text`$0
+}

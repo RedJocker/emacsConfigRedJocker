@@ -1,0 +1,9 @@
+# key: forvec
+# name: forvec
+# --
+for (std::vector<${1:$(upcase-initials yas-text)}>:iterator $1It = this->$1s.begin();
+    serverIt != this->$1s.end();
+    ++$1It)
+{	
+	$0
+}
