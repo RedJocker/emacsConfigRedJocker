@@ -6,3 +6,4 @@ custom.el
 .mc-lists.el
 recentf
 transient
+*.elc

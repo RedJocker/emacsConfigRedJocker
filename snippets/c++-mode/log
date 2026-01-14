@@ -1,0 +1,4 @@
+# name: log
+# binding: C-c l
+# --
+std::cout << "`yas-selected-text`: " << `yas-selected-text` << std::endl;
