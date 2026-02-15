@@ -1,4 +1,4 @@
-;;; package --- Sumary
+;;; package --- Sumary  -*- lexical-binding: t; -*-
 ;;; Commentary:
 ;;;   file for configuring the enviroment for Emacs
 ;;; Code:
@@ -9,7 +9,7 @@
 ;;  emacs -Q --init-directory ~/.emacs.42.d/
 ;; #+end_src: 
 
-(setq user-emacs-directory "~/.emacs.42.d/")
+(setq user-emacs-directory "~/.emacs.promo.d/")
 
 ;; Define the init file for automatic config as "custom.el"
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
@@ -32,9 +32,6 @@
 				   ("nongnu". 1)))
 ;;(package-initialize)
 ;;(package-refresh-contents)
-
-(global-unset-key (kbd "<up>"))
-(global-unset-key (kbd "<down>"))
 
 
 (use-package ace-window
@@ -71,6 +68,9 @@
   (tool-bar-mode -1)
   ;; tab-bar
   (tab-bar-mode -1)
+  ;; remove window decorations from frame on gui emacs
+  (set-frame-parameter nil 'undecorated t)
+  (scroll-bar-mode -1)
   ;; col-num on modeline
   (column-number-mode t)
   ;; lambda
@@ -145,11 +145,6 @@
 
 (expand-file-name "custom.el" user-emacs-directory)
 
-(load (expand-file-name "list.el" (concat user-emacs-directory "42")))
-(load (expand-file-name "string.el" (concat user-emacs-directory "42")))
-(load (expand-file-name "comments.el" (concat user-emacs-directory "42")))
-(load (expand-file-name "header.el" (concat user-emacs-directory "42")))
-
 
 (use-package deadgrep
   :ensure t
@@ -163,8 +158,8 @@
   :ensure t
   :bind
   (("C-c <right>" . #'mc/mark-next-like-this-word)
-   ("C-c <down>"  . #'mc/mark-next-lines)
-   ("C-c <up>"    . #'mc/mark-previous-lines)
+   ("M-<down>"  . #'mc/mark-next-lines)
+   ("M-<up>"    . #'mc/mark-previous-lines)
    ("C-c >"       . #'mc/mark-all-symbols-like-this-in-defun)
    ("C-c M->"     . #'mc/mark-all-words-like-this)
    ("C-c SPC"     . #'mc/edit-lines)
@@ -193,6 +188,59 @@
 ;;(set-face-attribute 'hl-line nil :foreground nil :background "#DDDDDD")
 
 ;;(set-frame-font "Monospace 19" nil t)
+
+(use-package modus-themes
+  :ensure t
+  :demand t
+  :init
+  ;; Starting with version 5.0.0 of the `modus-themes', other packages
+  ;; can be built on top to provide their own "Modus" derivatives.
+  ;; For example, this is what I do with my `ef-themes' and
+  ;; `standard-themes' (starting with versions 2.0.0 and 3.0.0,
+  ;; respectively).
+  ;;
+  ;; The `modus-themes-include-derivatives-mode' makes all Modus
+  ;; commands that act on a theme consider all such derivatives, if
+  ;; their respective packages are available and have been loaded.
+  ;;
+  ;; Note that those packages can even completely take over from the
+  ;; Modus themes such that, for example, `modus-themes-rotate' only
+  ;; goes through the Ef themes (to this end, the Ef themes provide
+  ;; the `ef-themes-take-over-modus-themes-mode' and the Standard
+  ;; themes have the `standard-themes-take-over-modus-themes-mode'
+  ;; equivalent).
+  ;;
+  ;; If you only care about the Modus themes, then (i) you do not need
+  ;; to enable the `modus-themes-include-derivatives-mode' and (ii) do
+  ;; not install and activate those other theme packages.
+  (modus-themes-include-derivatives-mode 1)
+  :bind
+  (("<f5>" . modus-themes-rotate)
+   ("C-<f5>" . modus-themes-select)
+   ("M-<f5>" . modus-themes-load-random))
+  :config
+  ;; Your customizations here:
+  (setq modus-themes-to-toggle '(modus-operandi modus-vivendi)
+        modus-themes-to-rotate modus-themes-items
+        modus-themes-mixed-fonts t
+        modus-themes-variable-pitch-ui t
+        modus-themes-italic-constructs t
+        modus-themes-bold-constructs t
+        modus-themes-completions '((t . (bold)))
+        modus-themes-prompts '(bold)
+        modus-themes-headings
+        '((agenda-structure . (variable-pitch light 2.2))
+          (agenda-date . (variable-pitch regular 1.3))
+          (t . (regular 1.15))))
+
+  (setq modus-themes-common-palette-overrides nil)
+
+  ;; Finally, load your theme of choice (or a random one with
+  ;; `modus-themes-load-random', `modus-themes-load-random-dark',
+  ;; `modus-themes-load-random-light').
+  (modus-themes-load-theme 'modus-vivendi-deuteranopia))
+
+
 ;; ;;Theme
 
 (use-package undo-tree
@@ -203,7 +251,7 @@
   (undo-tree-auto-save-history t)
   
   (undo-tree-history-directory-alist `((".*" . ,(expand-file-name "undo-tree-history-files/" user-emacs-directory))))
-  (undo-tree-visualizer-diff t)
+  (undo-tree-visualizer-diff nil)
   (undo-tree-visualizer-timestamps t))
 
 '(((()))) ;; color parentheses by nested level
@@ -239,14 +287,6 @@
   :init
   (global-corfu-mode))
 
-;; adapt corfu to terminal mode
-(use-package corfu-terminal
-  :ensure t
-  :config
-  (unless (display-graphic-p)
-    (corfu-terminal-mode +1)))
-
-
 ;; keybiding help on mini-buffer
 (use-package which-key
   :config
@@ -255,17 +295,6 @@
 	which-key-idle-secondary-delay 0.5)
   (which-key-setup-side-window-bottom))
 
-
-;; Beacon - find your cursor faster
-(use-package beacon
-  :config
-  (beacon-mode 1)
-  :custom
-  (beacon-blink-duration 1)
-  (beacon-blink-delay 0.2)
-  (beacon-size 80)
-  (beacon-blink-when-point-moves-vertically 2)
-  (beacon-blink-when-point-moves-horizontally 2))
 
 ;; git interface
 (use-package magit
@@ -315,12 +344,6 @@
 	 ("C-c e Q" . #'eglot-shutdown)
 	 ("C-c e w" . #'eglot-reconnect)
 	 ("C-c e r" . #'eglot-rename)))
-
-
-(push "/usr/share/emacs/site-lisp/" load-path)
-(require 'clang-format)
-(require 'clang-include-fixer)
-(require 'clang-rename)
 
 
 
