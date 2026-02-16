@@ -378,6 +378,70 @@
   (pbcopy)
   (delete-region (region-beginning) (region-end)))
 
+
+(use-package gptel
+  :ensure t
+  :config
+  (require 'gptel-integrations)
+  (require 'gptel-org)
+  (require 'dot-env)
+  
+  (let* ((dot-env-environment (dot-env-config "~/.env"))
+	 (ollama-api-key (car
+			  (alist-get
+			   'OLLAMA_API_KEY
+			   dot-env-environment))))
+    (setq-default
+     gptel-backend
+     (gptel-make-ollama "Ollama" ;Any name of your choosing
+       :host "localhost:8080"   ;Where it's running
+       :stream t   ;Stream responses
+       :models '(deepseek-v3.1:671b-cloud
+		 nemotron-3-nano:30b-cloud
+		 gpt-oss:120b-cloud
+		 granite4:latest
+		 qwen3:4b
+		 qwen3-vl:235b-cloud) ;List of models
+       :key ollama-api-key ; api key for cloud models
+       )))
+  :custom
+  ;(gptel-default-mode 'org-mode)
+  (gptel-use-curl t)
+  (gptel-use-tools t)
+  (gptel-confirm-tool-calls 'always)
+  (gptel-include-tool-results 'auto)
+  )
+
+(use-package mcp
+  :ensure t
+  :after gptel
+  :custom
+  (mcp-hub-servers
+   `(
+     ;; ("github" . (:command "docker"
+     ;;              :args ("run" "-i" "--rm"
+     ;;                     "-e" "GITHUB_PERSONAL_ACCESS_TOKEN"
+     ;;                     "ghcr.io/github/github-mcp-server")
+     ;;              :env (:GITHUB_PERSONAL_ACCESS_TOKEN ,(get-sops-secret-value "gh_pat_mcp"))))
+     
+     ("duckduckgo" . (:command "uvx" :args ("duckduckgo-mcp-server")))
+     ;; ("nixos" . (:command "uvx" :args ("mcp-nixos")))
+     
+     ("fetch" . (:command "uvx" :args ("mcp-server-fetch")))
+     
+     ("filesystem" .
+      (:command "npx"
+		:args ("-y" "@modelcontextprotocol/server-filesystem"
+		       ,(expand-file-name (getenv "HOME") "playground"))))
+     
+     
+     ;; ("sequential-thinking" . (:command "npx" :args ("-y" "@modelcontextprotocol/server-sequential-thinking")))
+     
+     ;; ("context7" . (:command "npx" :args ("-y" "@upstash/context7-mcp") :env (:DEFAULT_MINIMUM_TOKENS "6000")))
+     ("greet_mcp" . (:url "http://localhost:8081/mcp"))
+     ))
+  :config (require 'mcp-hub)
+  :hook (after-init . mcp-hub-start-all-server))
 ;; ;; Swift
 ;; (defun load-swift() 
 ;;   (interactive)
@@ -747,8 +811,7 @@ If called interactively with no argument, uses the symbol at point as default."
 ;; (use-package w3m
 ;;   :ensure t)
 
-
-;; (use-package gptel)
+ 
 
 
 ;; ;; edit multiple occurrences of an identifier
