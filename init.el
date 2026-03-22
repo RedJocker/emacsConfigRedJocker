@@ -57,6 +57,19 @@
   (local-set-key (kbd "C-c e o") #'ff-get-other-file)
   (electric-indent-mode nil))
 
+
+(defun html-hook-fun()
+  (setq-local indent-tabs-mode nil)
+  (setq-local tab-width 2)
+  )
+
+(defun js-hook-fun()
+  (message "js-hook")
+  (setq-local js-indent-level 2)
+  (setq-local tab-width 2)
+  (setq-local indent-tabs-mode nil)
+  (electric-indent-mode t))
+
 (use-package emacs
   :ensure t
   :config
@@ -113,7 +126,8 @@
   (add-hook 'compilation-filter-hook 'ansi-color-compilation-filter)  
   (add-hook 'c-mode-hook #'c-hook-fun)
   (add-hook 'c++-mode-hook #'c-hook-fun)
-
+  (add-hook 'html-mode-hook #'html-hook-fun)
+  (add-hook 'js-mode-hook #'js-hook-fun)
   (let ((autosaves-dir (expand-file-name "auto-saves/" user-emacs-directory))
 	(backups-dir (expand-file-name "backups/" user-emacs-directory)))
     
@@ -121,7 +135,7 @@
       (make-directory autosaves-dir nil))
     (unless (file-exists-p backups-dir)
       (make-directory autosaves-dir nil))
-    
+
   (setq auto-save-file-name-transforms `((".*" ,autosaves-dir t)))
   (setq backup-directory-alist `((".*" . ,backups-dir))))
 
@@ -130,6 +144,7 @@
 
   (require 'calendar)
   (calendar-set-date-style 'iso)
+  (setq visible-bell t)
   
   :bind
   (("C-x C-b" . #'ibuffer)
@@ -145,6 +160,24 @@
 
 (expand-file-name "custom.el" user-emacs-directory)
 
+
+(setq sql-connection-alist
+      '((local-postgres
+         (sql-product 'postgres)
+         (sql-server "localhost")
+         (sql-user "postgres")  ; Replace with your PostgreSQL username
+         ;(sql-password "")
+         (sql-database "test_chatwoot")  ; Replace with your database name
+         (sql-port 5432))))  ; Default PostgreSQL port
+
+;; Optional: Set PostgreSQL program if not in PATH
+(setq sql-postgres-program "/usr/local/bin/psql")  ; Adjust path as needed
+
+(use-package bash-completion
+  :ensure t
+  :config
+  (bash-completion-setup)
+  )
 
 (use-package deadgrep
   :ensure t
@@ -184,61 +217,61 @@
 ;;   (set-face-attribute 'hl-line nil :foreground nil :background "#333333"))
 ;;(load-theme 'afternoon)
 
-;;(set-face-attribute 'hl-line nil :foreground nil :background "#222222")
+(set-face-attribute 'hl-line nil :foreground nil :background "#222222")
 ;;(set-face-attribute 'hl-line nil :foreground nil :background "#DDDDDD")
 
 ;;(set-frame-font "Monospace 19" nil t)
 
-(use-package modus-themes
-  :ensure t
-  :demand t
-  :init
-  ;; Starting with version 5.0.0 of the `modus-themes', other packages
-  ;; can be built on top to provide their own "Modus" derivatives.
-  ;; For example, this is what I do with my `ef-themes' and
-  ;; `standard-themes' (starting with versions 2.0.0 and 3.0.0,
-  ;; respectively).
-  ;;
-  ;; The `modus-themes-include-derivatives-mode' makes all Modus
-  ;; commands that act on a theme consider all such derivatives, if
-  ;; their respective packages are available and have been loaded.
-  ;;
-  ;; Note that those packages can even completely take over from the
-  ;; Modus themes such that, for example, `modus-themes-rotate' only
-  ;; goes through the Ef themes (to this end, the Ef themes provide
-  ;; the `ef-themes-take-over-modus-themes-mode' and the Standard
-  ;; themes have the `standard-themes-take-over-modus-themes-mode'
-  ;; equivalent).
-  ;;
-  ;; If you only care about the Modus themes, then (i) you do not need
-  ;; to enable the `modus-themes-include-derivatives-mode' and (ii) do
-  ;; not install and activate those other theme packages.
-  (modus-themes-include-derivatives-mode 1)
-  :bind
-  (("<f5>" . modus-themes-rotate)
-   ("C-<f5>" . modus-themes-select)
-   ("M-<f5>" . modus-themes-load-random))
-  :config
-  ;; Your customizations here:
-  (setq modus-themes-to-toggle '(modus-operandi modus-vivendi)
-        modus-themes-to-rotate modus-themes-items
-        modus-themes-mixed-fonts t
-        modus-themes-variable-pitch-ui t
-        modus-themes-italic-constructs t
-        modus-themes-bold-constructs t
-        modus-themes-completions '((t . (bold)))
-        modus-themes-prompts '(bold)
-        modus-themes-headings
-        '((agenda-structure . (variable-pitch light 2.2))
-          (agenda-date . (variable-pitch regular 1.3))
-          (t . (regular 1.15))))
+;; (use-package modus-themes
+;;   :ensure t
+;;   :demand t
+;;   :init
+;;   ;; Starting with version 5.0.0 of the `modus-themes', other packages
+;;   ;; can be built on top to provide their own "Modus" derivatives.
+;;   ;; For example, this is what I do with my `ef-themes' and
+;;   ;; `standard-themes' (starting with versions 2.0.0 and 3.0.0,
+;;   ;; respectively).
+;;   ;;
+;;   ;; The `modus-themes-include-derivatives-mode' makes all Modus
+;;   ;; commands that act on a theme consider all such derivatives, if
+;;   ;; their respective packages are available and have been loaded.
+;;   ;;
+;;   ;; Note that those packages can even completely take over from the
+;;   ;; Modus themes such that, for example, `modus-themes-rotate' only
+;;   ;; goes through the Ef themes (to this end, the Ef themes provide
+;;   ;; the `ef-themes-take-over-modus-themes-mode' and the Standard
+;;   ;; themes have the `standard-themes-take-over-modus-themes-mode'
+;;   ;; equivalent).
+;;   ;;
+;;   ;; If you only care about the Modus themes, then (i) you do not need
+;;   ;; to enable the `modus-themes-include-derivatives-mode' and (ii) do
+;;   ;; not install and activate those other theme packages.
+;;   (modus-themes-include-derivatives-mode 1)
+;;   :bind
+;;   (("<f5>" . modus-themes-rotate)
+;;    ("C-<f5>" . modus-themes-select)
+;;    ("M-<f5>" . modus-themes-load-random))
+;;   :config
+;;   ;; Your customizations here:
+;;   (setq modus-themes-to-toggle '(modus-operandi modus-vivendi)
+;;         modus-themes-to-rotate modus-themes-items
+;;         modus-themes-mixed-fonts t
+;;         modus-themes-variable-pitch-ui t
+;;         modus-themes-italic-constructs t
+;;         modus-themes-bold-constructs t
+;;         modus-themes-completions '((t . (bold)))
+;;         modus-themes-prompts '(bold)
+;;         modus-themes-headings
+;;         '((agenda-structure . (variable-pitch light 2.2))
+;;           (agenda-date . (variable-pitch regular 1.3))
+;;           (t . (regular 1.15))))
 
-  (setq modus-themes-common-palette-overrides nil)
+;;   (setq modus-themes-common-palette-overrides nil)
 
-  ;; Finally, load your theme of choice (or a random one with
-  ;; `modus-themes-load-random', `modus-themes-load-random-dark',
-  ;; `modus-themes-load-random-light').
-  (modus-themes-load-theme 'modus-vivendi-deuteranopia))
+;;   ;; Finally, load your theme of choice (or a random one with
+;;   ;; `modus-themes-load-random', `modus-themes-load-random-dark',
+;;   ;; `modus-themes-load-random-light').
+;;   (modus-themes-load-theme 'modus-vivendi-deuteranopia))
 
 
 ;; ;;Theme
@@ -346,30 +379,78 @@
 	 ("C-c e r" . #'eglot-rename)))
 
 
+(use-package dot-env
+  :ensure t)
 
-;; (defun cppman (entry)
-;;   "View C++ reference entry using cppman in Emacs, similar to man command.
-;; If called interactively with no argument, uses the symbol at point as default."
-;;   (interactive
-;;    (list (let* ((default (thing-at-point 'symbol t))
-;;                 (prompt (if default
-;;                             (format "C++ Reference entry (default %s): " default)
-;;                           "C++ Reference entry: ")))
-;;            (read-string prompt nil nil default))))
-;;   (let ((buffer (get-buffer-create (format "*cppman %s*" entry))))
-;;     (with-current-buffer buffer
-;;       (setq buffer-read-only nil)
-;;       (erase-buffer)
-;;       (call-process-shell-command
-;;        (format "cppman %s | col -b" entry)
-;;        nil (current-buffer))
-;;       (if (zerop (buffer-size))
-;;           (message "No results found for %s" entry)
-;;         (special-mode))
-;;       (setq buffer-read-only t)
-;;       (beginning-of-buffer))
-;;     (unless (zerop (buffer-size))
-;;       (switch-to-buffer buffer))))
+(use-package gptel
+  :ensure t
+  :config
+  (require 'gptel-integrations)
+  (require 'gptel-org)
+  (require 'dot-env)
+  
+  (let* ((dot-env-environment (dot-env-config "~/.env"))
+	 (ollama-api-key (car
+			  (alist-get
+			   'OLLAMA_API_KEY
+			   dot-env-environment))))
+    (setq-default
+     gptel-model 'deepseek-v3.1:671b-cloud
+     gptel-backend
+     (gptel-make-ollama "Ollama" ;Any name of your choosing
+       :host "localhost:11434"   ;Where it's running
+       :stream t   ;Stream responses
+       :models (split-string
+		(shell-command-to-string
+		 "ollama list | cut -d ' ' -f 1")
+		"\n" t) ;List of models
+       :key ollama-api-key ; api key for cloud models
+       )))
+  :custom
+					;(gptel-default-mode 'org-mode)
+  
+  (gptel-use-curl t)
+  (gptel-use-tools t)
+  (gptel-confirm-tool-calls 'always)
+  (gptel-include-tool-results 'auto)
+  )
+
+(use-package mcp
+  :ensure t
+  :after gptel
+  :custom
+  (mcp-hub-servers
+   `(
+     ;; ("github" . (:command "docker"
+     ;;              :args ("run" "-i" "--rm"
+     ;;                     "-e" "GITHUB_PERSONAL_ACCESS_TOKEN"
+     ;;                     "ghcr.io/github/github-mcp-server")
+     ;;              :env (:GITHUB_PERSONAL_ACCESS_TOKEN ,(get-sops-secret-value "gh_pat_mcp"))))
+     
+     ("duckduckgo" . (:command "uvx" :args ("duckduckgo-mcp-server")))
+     ;; ("nixos" . (:command "uvx" :args ("mcp-nixos")))
+     
+     ("fetch" . (:command "uvx" :args ("mcp-server-fetch")))
+     
+     ("filesystem" .
+      (:command "npx"
+		:args ("-y" "@modelcontextprotocol/server-filesystem"
+		       ,(expand-file-name (getenv "HOME") "playground"))))
+     
+     
+     ;; ("sequential-thinking" . (:command "npx" :args ("-y" "@modelcontextprotocol/server-sequential-thinking")))
+     
+     ;; ("context7" . (:command "npx" :args ("-y" "@upstash/context7-mcp") :env (:DEFAULT_MINIMUM_TOKENS "6000")))
+     ;;("greet_mcp" . (:url "http://localhost:8081/mcp"))
+     ))
+  :config (require 'mcp-hub)
+  :hook (after-init . mcp-hub-start-all-server))
+
+
+
+
+
+
 
 
 (put 'upcase-region 'disabled nil)
