@@ -173,11 +173,11 @@
 ;; Optional: Set PostgreSQL program if not in PATH
 (setq sql-postgres-program "/usr/local/bin/psql")  ; Adjust path as needed
 
-(use-package bash-completion
-  :ensure t
-  :config
-  (bash-completion-setup)
-  )
+;; (use-package bash-completion
+;;   :ensure t
+;;   :config
+;;   (bash-completion-setup)
+;;   )
 
 (use-package deadgrep
   :ensure t
@@ -217,7 +217,10 @@
 ;;   (set-face-attribute 'hl-line nil :foreground nil :background "#333333"))
 ;;(load-theme 'afternoon)
 
-(set-face-attribute 'hl-line nil :foreground nil :background "#222222")
+(set-face-attribute 'hl-line nil :foreground nil :background "#001010")
+(set-face-attribute 'highlight nil :foreground nil :background "#001010")
+(set-face-attribute 'magit-section-highlight nil :foreground nil :background "#001010")
+(set-face-attribute 'corfu-default nil :foreground nil :background "#000005")
 ;;(set-face-attribute 'hl-line nil :foreground nil :background "#DDDDDD")
 
 ;;(set-frame-font "Monospace 19" nil t)
