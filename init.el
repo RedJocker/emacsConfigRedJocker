@@ -199,85 +199,6 @@
    ))
 
 
-;; ;; Theme
-;; (use-package exotica-theme
-;;   :ensure t
-;;   :config (load-theme 'exotica t))
-
-;; (use-package zenburn-theme
-;;   :ensure t
-;;   :config (load-theme 'zenburn t)
-;;   (set-face-attribute 'region nil :background "#228" :foreground "#99ffff")
-;;   (set-face-attribute 'hl-line nil :foreground nil :background "#333333"))
-
-;; (use-package darktooth-theme
-;;   :ensure t
-;;   :config (load-theme 'darktooth t)
-;;   (set-face-attribute 'region nil :background "#116" :foreground "#77ff33")
-;;   (set-face-attribute 'hl-line nil :foreground nil :background "#333333"))
-;;(load-theme 'afternoon)
-
-(set-face-attribute 'hl-line nil :foreground nil :background "#001010")
-(set-face-attribute 'highlight nil :foreground nil :background "#001010")
-(set-face-attribute 'magit-section-highlight nil :foreground nil :background "#001010")
-(set-face-attribute 'corfu-default nil :foreground nil :background "#000005")
-;;(set-face-attribute 'hl-line nil :foreground nil :background "#DDDDDD")
-
-;;(set-frame-font "Monospace 19" nil t)
-
-;; (use-package modus-themes
-;;   :ensure t
-;;   :demand t
-;;   :init
-;;   ;; Starting with version 5.0.0 of the `modus-themes', other packages
-;;   ;; can be built on top to provide their own "Modus" derivatives.
-;;   ;; For example, this is what I do with my `ef-themes' and
-;;   ;; `standard-themes' (starting with versions 2.0.0 and 3.0.0,
-;;   ;; respectively).
-;;   ;;
-;;   ;; The `modus-themes-include-derivatives-mode' makes all Modus
-;;   ;; commands that act on a theme consider all such derivatives, if
-;;   ;; their respective packages are available and have been loaded.
-;;   ;;
-;;   ;; Note that those packages can even completely take over from the
-;;   ;; Modus themes such that, for example, `modus-themes-rotate' only
-;;   ;; goes through the Ef themes (to this end, the Ef themes provide
-;;   ;; the `ef-themes-take-over-modus-themes-mode' and the Standard
-;;   ;; themes have the `standard-themes-take-over-modus-themes-mode'
-;;   ;; equivalent).
-;;   ;;
-;;   ;; If you only care about the Modus themes, then (i) you do not need
-;;   ;; to enable the `modus-themes-include-derivatives-mode' and (ii) do
-;;   ;; not install and activate those other theme packages.
-;;   (modus-themes-include-derivatives-mode 1)
-;;   :bind
-;;   (("<f5>" . modus-themes-rotate)
-;;    ("C-<f5>" . modus-themes-select)
-;;    ("M-<f5>" . modus-themes-load-random))
-;;   :config
-;;   ;; Your customizations here:
-;;   (setq modus-themes-to-toggle '(modus-operandi modus-vivendi)
-;;         modus-themes-to-rotate modus-themes-items
-;;         modus-themes-mixed-fonts t
-;;         modus-themes-variable-pitch-ui t
-;;         modus-themes-italic-constructs t
-;;         modus-themes-bold-constructs t
-;;         modus-themes-completions '((t . (bold)))
-;;         modus-themes-prompts '(bold)
-;;         modus-themes-headings
-;;         '((agenda-structure . (variable-pitch light 2.2))
-;;           (agenda-date . (variable-pitch regular 1.3))
-;;           (t . (regular 1.15))))
-
-;;   (setq modus-themes-common-palette-overrides nil)
-
-;;   ;; Finally, load your theme of choice (or a random one with
-;;   ;; `modus-themes-load-random', `modus-themes-load-random-dark',
-;;   ;; `modus-themes-load-random-light').
-;;   (modus-themes-load-theme 'modus-vivendi-deuteranopia))
-
-
-;; ;;Theme
 
 (use-package undo-tree
   :ensure t
@@ -384,6 +305,88 @@
 
 (use-package dot-env
   :ensure t)
+
+;; ;; Theme
+;; (use-package exotica-theme
+;;   :ensure t
+;;   :config (load-theme 'exotica t))
+
+;; (use-package zenburn-theme
+;;   :ensure t
+;;   :config (load-theme 'zenburn t)
+;;   (set-face-attribute 'region nil :background "#228" :foreground "#99ffff")
+;;   (set-face-attribute 'hl-line nil :foreground nil :background "#333333"))
+
+;; (use-package darktooth-theme
+;;   :ensure t
+;;   :config (load-theme 'darktooth t)
+;;   (set-face-attribute 'region nil :background "#116" :foreground "#77ff33")
+;;   (set-face-attribute 'hl-line nil :foreground nil :background "#333333"))
+;;(load-theme 'afternoon)
+
+(set-face-attribute 'hl-line nil :foreground nil :background "#001010")
+(set-face-attribute 'highlight nil :foreground nil :background "#001010")
+(set-face-attribute 'magit-section-highlight nil :foreground nil :background "#001010")
+(set-face-attribute 'corfu-default nil :foreground nil :background "#000005")
+
+;;(set-face-attribute 'hl-line nil :foreground nil :background "#DDDDDD")
+
+;;(set-frame-font "Monospace 19" nil t)
+
+;; (use-package modus-themes
+;;   :ensure t
+;;   :demand t
+;;   :init
+;;   ;; Starting with version 5.0.0 of the `modus-themes', other packages
+;;   ;; can be built on top to provide their own "Modus" derivatives.
+;;   ;; For example, this is what I do with my `ef-themes' and
+;;   ;; `standard-themes' (starting with versions 2.0.0 and 3.0.0,
+;;   ;; respectively).
+;;   ;;
+;;   ;; The `modus-themes-include-derivatives-mode' makes all Modus
+;;   ;; commands that act on a theme consider all such derivatives, if
+;;   ;; their respective packages are available and have been loaded.
+;;   ;;
+;;   ;; Note that those packages can even completely take over from the
+;;   ;; Modus themes such that, for example, `modus-themes-rotate' only
+;;   ;; goes through the Ef themes (to this end, the Ef themes provide
+;;   ;; the `ef-themes-take-over-modus-themes-mode' and the Standard
+;;   ;; themes have the `standard-themes-take-over-modus-themes-mode'
+;;   ;; equivalent).
+;;   ;;
+;;   ;; If you only care about the Modus themes, then (i) you do not need
+;;   ;; to enable the `modus-themes-include-derivatives-mode' and (ii) do
+;;   ;; not install and activate those other theme packages.
+;;   (modus-themes-include-derivatives-mode 1)
+;;   :bind
+;;   (("<f5>" . modus-themes-rotate)
+;;    ("C-<f5>" . modus-themes-select)
+;;    ("M-<f5>" . modus-themes-load-random))
+;;   :config
+;;   ;; Your customizations here:
+;;   (setq modus-themes-to-toggle '(modus-operandi modus-vivendi)
+;;         modus-themes-to-rotate modus-themes-items
+;;         modus-themes-mixed-fonts t
+;;         modus-themes-variable-pitch-ui t
+;;         modus-themes-italic-constructs t
+;;         modus-themes-bold-constructs t
+;;         modus-themes-completions '((t . (bold)))
+;;         modus-themes-prompts '(bold)
+;;         modus-themes-headings
+;;         '((agenda-structure . (variable-pitch light 2.2))
+;;           (agenda-date . (variable-pitch regular 1.3))
+;;           (t . (regular 1.15))))
+
+;;   (setq modus-themes-common-palette-overrides nil)
+
+;;   ;; Finally, load your theme of choice (or a random one with
+;;   ;; `modus-themes-load-random', `modus-themes-load-random-dark',
+;;   ;; `modus-themes-load-random-light').
+;;   (modus-themes-load-theme 'modus-vivendi-deuteranopia))
+
+
+;; ;;Theme
+
 
 (use-package gptel
   :ensure t
