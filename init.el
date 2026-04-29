@@ -277,6 +277,10 @@
   (yas-reload-all))
 
 
+(set-default 'etags-regen-regexp-alist
+	     '(("python" . "/[ \t]*async[ \t]+def[ \t]+\(.*\)(/\1/")))
+
+
 (use-package eglot
   :ensure t
   :config
